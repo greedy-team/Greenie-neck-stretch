@@ -3,6 +3,8 @@
 스페이스바를 연타해서 그리디 마스코트인 기린 **'그린이'**의 목을 늘려  
 세종대학교 시계탑의 종을 울리는 게임!
 
+🔗 **플레이하기:** https://greedy-team.github.io/Greenie-neck-stretch/
+
 ---
 
 ## 🎮 게임 개요
@@ -18,7 +20,7 @@
 
 ## ⏱️ 게임 방식
 
-1. 시작 시 **4자리 ID** 입력 (공백 없이)
+1. 시작 시 **영문 대문자/숫자 4자리 ID** 입력 (소문자는 자동으로 대문자 변환)
 2. `스페이스바`를 누르면 게임 시작
 3. **15초 내에 100번 누르면 성공**
 4. 성공 시 결과 타임 + 랭킹 등록
@@ -39,35 +41,62 @@
 
 ### 1. 저장소 클론
 ```sh
-# 터미널에서 실행
-git clone https://github.com/INSANE-P/Greenie-neck-stretch.git
+git clone https://github.com/greedy-team/Greenie-neck-stretch.git
 cd Greenie-neck-stretch
 ```
 
 
 ### 2. 패키지 설치
 ```sh
-# 터미널에서 실행
 npm install
 ```
 
 
 ### 3. 환경 변수 설정
-```env
-# .env 내부
-REACT_APP_API_TOKEN=여기에_실제_토큰_값
+`.env.example`을 복사해서 `.env`를 만들고 백엔드 API base URL을 채워 넣으세요.
+```sh
+cp .env.example .env
 ```
+```env
+# .env
+REACT_APP_API_BASE_URL=https://your-api-url-here.com
+```
+> 운영 배포 시에는 GitHub Actions secret(`REACT_APP_API_BASE_URL`)에서 값이 주입됩니다.
 
 
 ### 4. 개발 서버 실행
 ```sh
-# 터미널에서 실행
 npm start
 ```
 
-### !!! main(비동기 로직)의 파일 작동 안할 경우 !!!
-```sh
-# 터미널에서 실행
-git checkout -b backup origin/backup
+---
+
+## 📁 프로젝트 구조
+
 ```
-를 통해 backup 파일 실행(동기 로직)
+src/
+├── Giraffe.jsx                  # 메인 게임 컨테이너
+├── components/                  # UI 컴포넌트
+│   ├── StartModal.jsx
+│   ├── GameOverModal.jsx
+│   ├── Hud.jsx
+│   ├── RankingTable.jsx
+│   ├── SceneLayer.jsx
+│   ├── GiraffeSprite.jsx
+│   └── Particles.jsx
+└── game/
+    ├── constants.js             # 게임 상수 (시간/목표/크기 등)
+    ├── sceneObjects.js          # 배경/타워/기린 위치 계산
+    ├── api.js                   # 점수 제출 / 랭킹 조회
+    └── hooks/                   # 게임 로직 훅
+        ├── useGameTimer.js
+        ├── useKeyboardInput.js
+        ├── useParticles.js
+        └── useScreenShake.js
+```
+
+---
+
+## 🚀 배포
+
+`main` 브랜치에 push하면 [GitHub Actions 워크플로우](.github/workflows/deploy.yml)가 자동으로 빌드 후 GitHub Pages에 배포합니다.
