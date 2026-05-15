@@ -65,7 +65,7 @@ export const Bell = ({ offset }) => (
   <div
     style={{
       position: "fixed",
-      top: `-${100 + offset}px`,
+      top: `-${130 + offset}px`,
       left: "50%",
       transform: "translateX(-50%)",
       transition: SCENE_TRANSITION,
