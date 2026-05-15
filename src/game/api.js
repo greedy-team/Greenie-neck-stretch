@@ -1,6 +1,7 @@
 import { GAME_NAME } from "./constants";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 const jsonHeaders = { "Content-Type": "application/json" };
 
@@ -9,6 +10,7 @@ export const submitScore = async (userId, score) => {
     gameName: GAME_NAME,
     userId,
     score: Number(score.toFixed(5)),
+    apiKey: API_KEY,
   };
 
   try {

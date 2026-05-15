@@ -53,15 +53,17 @@ npm install
 
 
 ### 3. 환경 변수 설정
-`.env.example`을 복사해서 `.env`를 만들고 백엔드 API base URL을 채워 넣으세요.
+`.env.example`을 복사해서 `.env`를 만들고 백엔드 API base URL과 인증 키를 채워 넣으세요.
 ```sh
 cp .env.example .env
 ```
 ```env
 # .env
 REACT_APP_API_BASE_URL=https://your-api-url-here.com
+REACT_APP_API_KEY=your-api-key-here
 ```
-> 운영 배포 시에는 GitHub Actions secret(`REACT_APP_API_BASE_URL`)에서 값이 주입됩니다.
+> 운영 배포 시에는 GitHub Actions secret(`REACT_APP_API_BASE_URL`, `REACT_APP_API_KEY`)에서 값이 주입됩니다.
+> `REACT_APP_API_KEY`는 점수 제출 요청 body에 함께 전송되는 인증 키로, 운영진 공지에서 받은 값을 사용하세요.
 
 
 ### 4. 개발 서버 실행
