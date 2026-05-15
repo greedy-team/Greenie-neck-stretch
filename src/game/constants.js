@@ -12,6 +12,8 @@ export const BG_MAX_OFFSET = 10000;
 export const BG_MIN_OFFSET = 0;
 export const BG_STEP_PER_PRESS = 100;
 
+export const GIRAFFE_SPACE_START = 49;
+
 export const PARTICLE_STAGE_1_START = 51;
 export const PARTICLE_STAGE_2_START = 61;
 export const PARTICLE_STAGE_3_START = 71;

@@ -5,6 +5,7 @@ import giraffeSpaceA from "../space1.png";
 import giraffeSpaceB from "../space2.png";
 import {
   GIRAFFE_FRAME_INTERVAL_MS,
+  GIRAFFE_SPACE_START,
   GIRAFFE_TRANSITION_SEC,
   GIRAFFE_WIDTH,
 } from "../game/constants";
@@ -22,7 +23,7 @@ const useFrameToggle = (intervalMs) => {
 };
 
 const pickSprite = (pressCount, frame) => {
-  if (pressCount > 50) return frame === 0 ? giraffeSpaceA : giraffeSpaceB;
+  if (pressCount > GIRAFFE_SPACE_START) return frame === 0 ? giraffeSpaceA : giraffeSpaceB;
   return frame === 0 ? giraffePartyA : giraffePartyB;
 };
 
