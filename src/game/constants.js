@@ -3,10 +3,10 @@ export const GAME_NAME = "green-neck";
 export const GAME_DURATION_SEC = 15;
 export const SPACEBAR_GOAL_COUNT = 100;
 
-export const NECK_STEP = 30;
+export const NECK_STEP = 36;
 export const NECK_INITIAL_OFFSET = -400;
-export const NECK_MAX_OFFSET = -60;
-export const NECK_MIN_OFFSET = -280;
+export const NECK_MAX_OFFSET = -35;
+export const NECK_MIN_OFFSET = -305;
 
 export const BG_MAX_OFFSET = 10000;
 export const BG_MIN_OFFSET = 0;
@@ -27,7 +27,7 @@ export const GIRAFFE_FRAME_INTERVAL_MS = 400;
 
 export const BG_TRANSITION_SEC = 0.1;
 export const TOWER_TRANSITION_SEC = 0.1;
-export const GIRAFFE_TRANSITION_SEC = 0.8;
+export const GIRAFFE_TRANSITION_SEC = 0.6;
 export const SCENE_TRANSITION = "top 0.8s cubic-bezier(0.25, 1, 0.5, 1)";
 
 export const SHAKE_DURATION_MS = 500;
