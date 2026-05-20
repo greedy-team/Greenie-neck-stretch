@@ -6,8 +6,7 @@ const isUserTyping = (target) => {
 };
 
 export const useKeyboardInput = ({
-  isGameOver,
-  isStartModalOpen,
+  gameState,
   onPressSpace,
   onRestart,
 }) => {
@@ -21,22 +20,21 @@ export const useKeyboardInput = ({
   });
 
   useEffect(() => {
+    const acceptsSpace = gameState === "start" || gameState === "playing";
+    const acceptsRestart =
+      gameState === "playing" ||
+      gameState === "result" ||
+      gameState === "ranking";
+
     const handleKeyDown = (e) => {
-      const typing = isUserTyping(e.target);
+      if (isUserTyping(e.target)) return;
 
-      if ((e.key === "r" || e.key === "R" || e.key === "ㄱ") && typing) return;
-
-      if (
-        e.code === "Space" &&
-        !isKeyDownRef.current &&
-        !isGameOver &&
-        !isStartModalOpen
-      ) {
+      if (e.code === "Space" && acceptsSpace && !isKeyDownRef.current) {
         isKeyDownRef.current = true;
         pressRef.current();
       }
 
-      if ((e.key === "r" || e.key === "R") && !isStartModalOpen) {
+      if ((e.key === "r" || e.key === "R") && acceptsRestart) {
         restartRef.current();
       }
     };
@@ -51,5 +49,5 @@ export const useKeyboardInput = ({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isGameOver, isStartModalOpen]);
+  }, [gameState]);
 };

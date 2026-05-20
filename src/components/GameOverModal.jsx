@@ -108,41 +108,7 @@ const RankingHeading = () => (
   </div>
 );
 
-const submitStatusStyle = {
-  marginTop: "10px",
-  fontSize: "20px",
-  fontFamily: "YOnepickTTF-Bold",
-};
-
-const SubmitStatusNotice = ({ submitStatus }) => {
-  if (!submitStatus || submitStatus.state === "idle") return null;
-  if (submitStatus.state === "pending") {
-    return (
-      <div style={{ ...submitStatusStyle, color: "#ccc" }}>점수 전송 중...</div>
-    );
-  }
-  if (submitStatus.state === "failed") {
-    const detail =
-      submitStatus.status === 400
-        ? "존재하지 않는 ID일 수 있습니다."
-        : submitStatus.status
-          ? `서버 응답 ${submitStatus.status}`
-          : "네트워크 오류";
-    return (
-      <div style={{ ...submitStatusStyle, color: "#ff6b6b" }}>
-        ⚠️ 점수 등록 실패 — {detail}
-      </div>
-    );
-  }
-  return null;
-};
-
-const GameOverModal = ({
-  isTimeOver,
-  finalClearTime,
-  ranking,
-  submitStatus,
-}) => (
+const GameOverModal = ({ isTimeOver, finalClearTime, ranking }) => (
   <div style={overlayStyle}>
     <div style={innerStyle}>
       {isTimeOver ? (
@@ -152,15 +118,15 @@ const GameOverModal = ({
       )}
       <RankingHeading />
       <RankingTable ranking={ranking} />
-      <SubmitStatusNotice submitStatus={submitStatus} />
       <div
         style={{
+          marginTop: "20px",
           color: "white",
           fontSize: "25px",
           fontFamily: "YOnepickTTF-Bold",
         }}
       >
-        R키를 눌러 재시작
+        R키를 눌러 처음으로
       </div>
     </div>
   </div>

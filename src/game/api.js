@@ -32,6 +32,19 @@ export const submitScore = async (userId, score) => {
   }
 };
 
+export const validateUser = async (userId) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/users/${encodeURIComponent(userId)}`, {
+      method: "GET",
+    });
+    if (!res.ok) return { ok: false, status: res.status };
+    const data = await res.json();
+    return { ok: true, user: data };
+  } catch (e) {
+    return { ok: false, status: 0, error: e };
+  }
+};
+
 export const fetchRanking = async () => {
   try {
     const res = await fetch(`${BASE_URL}/api/leader-board/${GAME_NAME}`, {

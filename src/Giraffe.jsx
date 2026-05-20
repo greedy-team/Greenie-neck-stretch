@@ -27,6 +27,8 @@ import Hud from "./components/Hud";
 import Particles from "./components/Particles";
 import GiraffeSprite from "./components/GiraffeSprite";
 import StartModal from "./components/StartModal";
+import ResultModal from "./components/ResultModal";
+import IdSubmitModal from "./components/IdSubmitModal";
 import GameOverModal from "./components/GameOverModal";
 import {
   Background,
@@ -40,20 +42,15 @@ const CONTAINER_ID = "game-container";
 
 const Giraffe = () => {
   const audioRef = useRef(null);
-  const submittedRef = useRef(false);
   const isGreenieUpRef = useRef(true);
 
+  const [gameState, setGameState] = useState("start");
+  const [isTimeOver, setIsTimeOver] = useState(false);
   const [backgroundOffset, setBackgroundOffset] = useState(BG_MAX_OFFSET);
   const [backgroundHeight, setBackgroundHeight] = useState(BG_MAX_OFFSET);
   const [pressCount, setPressCount] = useState(0);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [isTimeOver, setIsTimeOver] = useState(false);
-  const [, setIsSubmitted] = useState(false);
   const [ranking, setRanking] = useState([]);
-  const [playerId, setPlayerId] = useState("");
-  const [nameError, setNameError] = useState("");
   const [neckOffset, setNeckOffset] = useState(NECK_INITIAL_OFFSET);
-  const [isStartModalOpen, setIsStartModalOpen] = useState(true);
   const [finalClearTime, setFinalClearTime] = useState(null);
   const [submitStatus, setSubmitStatus] = useState({ state: "idle" });
 
@@ -68,38 +65,17 @@ const Giraffe = () => {
     fetchRanking().then((r) => setRanking(r.slice(0, RANKING_TOP_N)));
   }, []);
 
-  const handleSubmitResult = async (score) => {
-    timer.stop();
-    setFinalClearTime(score);
-    setSubmitStatus({ state: "pending" });
-    const result = await submitScore(playerId, score);
-    setSubmitStatus(
-      result.ok
-        ? { state: "success" }
-        : { state: "failed", status: result.status },
-    );
-    const top = (await fetchRanking()).slice(0, RANKING_TOP_N);
-    submittedRef.current = true;
-    setRanking(top);
-  };
-
   useEffect(() => {
-    if (timer.remainingTime === 0 && !isGameOver) {
-      setIsTimeOver(true);
-      setIsGameOver(true);
+    if (gameState === "playing" && timer.remainingTime === 0) {
       timer.stop();
+      setFinalClearTime(GAME_DURATION_SEC);
+      setIsTimeOver(true);
+      setGameState("result");
     }
-  }, [timer.remainingTime, isGameOver, timer]);
-
-  useEffect(() => {
-    if (isGameOver && isTimeOver && !submittedRef.current) {
-      handleSubmitResult(GAME_DURATION_SEC);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameOver, isTimeOver]);
+  }, [timer.remainingTime, gameState, timer]);
 
   useScreenShake({
-    active: isGameOver && !isTimeOver,
+    active: gameState === "result" && !isTimeOver,
     targetId: CONTAINER_ID,
   });
 
@@ -126,6 +102,7 @@ const Giraffe = () => {
   };
 
   const handlePressSpace = () => {
+    if (gameState === "start") setGameState("playing");
     timer.start();
 
     advanceNeck();
@@ -137,14 +114,12 @@ const Giraffe = () => {
       const next = prev + 1;
       spawnStageParticles(next);
 
-      if (next >= SPACEBAR_GOAL_COUNT && !submittedRef.current) {
-        setIsTimeOver(false);
-        setIsGameOver(true);
-        setIsSubmitted(true);
+      if (next >= SPACEBAR_GOAL_COUNT) {
         timer.stop();
         const clearTime = GAME_DURATION_SEC - timer.remainingTimeRef.current;
         setFinalClearTime(clearTime);
-        handleSubmitResult(clearTime);
+        setIsTimeOver(false);
+        setGameState("result");
         audioRef.current?.play();
       }
       return next;
@@ -153,29 +128,44 @@ const Giraffe = () => {
 
   const handleRestart = () => {
     timer.reset();
-    submittedRef.current = false;
-    setIsGameOver(false);
+    setGameState("start");
     setIsTimeOver(false);
     setPressCount(0);
-    setIsSubmitted(false);
     setBackgroundOffset(BG_MAX_OFFSET);
     setNeckOffset(NECK_INITIAL_OFFSET);
-    setIsStartModalOpen(true);
-    setPlayerId("");
+    setFinalClearTime(null);
     setSubmitStatus({ state: "idle" });
+    isGreenieUpRef.current = true;
+  };
+
+  const handleOpenIdInput = () => {
+    setSubmitStatus({ state: "idle" });
+    setGameState("idInput");
+  };
+
+  const handleCancelIdInput = () => {
+    setSubmitStatus({ state: "idle" });
+    setGameState("result");
+  };
+
+  const handleSubmitId = async (playerId) => {
+    setSubmitStatus({ state: "pending" });
+    const result = await submitScore(playerId, finalClearTime);
+    if (!result.ok) {
+      setSubmitStatus({ state: "failed", status: result.status });
+      return;
+    }
+    const top = (await fetchRanking()).slice(0, RANKING_TOP_N);
+    setRanking(top);
+    setSubmitStatus({ state: "success" });
+    setGameState("ranking");
   };
 
   useKeyboardInput({
-    isGameOver,
-    isStartModalOpen,
+    gameState,
     onPressSpace: handlePressSpace,
     onRestart: handleRestart,
   });
-
-  const handlePlayerIdChange = (next, errMessage) => {
-    setPlayerId(next);
-    setNameError(errMessage);
-  };
 
   return (
     <div
@@ -200,21 +190,31 @@ const Giraffe = () => {
       <GiraffeSprite neckOffset={neckOffset} pressCount={pressCount} />
       <SceneObjects offset={backgroundOffset} />
 
-      {isStartModalOpen && (
-        <StartModal
-          playerId={playerId}
-          nameError={nameError}
-          onIdChange={handlePlayerIdChange}
-          onSubmit={() => setIsStartModalOpen(false)}
+      {gameState === "start" && <StartModal />}
+
+      {gameState === "result" && (
+        <ResultModal
+          isTimeOver={isTimeOver}
+          finalClearTime={finalClearTime}
+          pressCount={pressCount}
+          onSubmitRecord={handleOpenIdInput}
+          onNextChallenger={handleRestart}
         />
       )}
 
-      {isGameOver && (
+      {gameState === "idInput" && (
+        <IdSubmitModal
+          submitStatus={submitStatus}
+          onSubmit={handleSubmitId}
+          onCancel={handleCancelIdInput}
+        />
+      )}
+
+      {gameState === "ranking" && (
         <GameOverModal
           isTimeOver={isTimeOver}
           finalClearTime={finalClearTime}
           ranking={ranking}
-          submitStatus={submitStatus}
         />
       )}
     </div>
