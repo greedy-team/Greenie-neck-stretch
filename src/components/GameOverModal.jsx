@@ -79,7 +79,7 @@ const SuccessHeading = ({ finalClearTime }) => (
           fontFamily: "YOnepickTTF-Bold",
         }}
       >
-        {finalClearTime?.toFixed(2)}초
+        {finalClearTime?.toFixed(4)}초
       </div>
       <img
         src={clock}
