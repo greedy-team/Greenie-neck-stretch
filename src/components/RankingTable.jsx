@@ -36,7 +36,7 @@ const RankingTable = ({ ranking }) => (
         <tr key={r.rank} style={{ color: RANK_COLOR[i] ?? "white" }}>
           <td style={cellBase}>{r.rank}</td>
           <td style={cellBase}>{r.nickname}</td>
-          <td style={cellBase}>{r.score.toFixed(2)}초</td>
+          <td style={cellBase}>{r.score.toFixed(4)}초</td>
         </tr>
       ))}
     </tbody>
